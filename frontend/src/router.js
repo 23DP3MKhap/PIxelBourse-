@@ -4,7 +4,7 @@ export default createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', redirect: '/market' },
-    { path: '/home', component: () => import('./views/ComingSoonView.vue'), props: { title: 'Sākums' } },
+    { path: '/home', component: () => import('./views/HomeView.vue') },
     { path: '/click', component: () => import('./views/ComingSoonView.vue'), props: { title: 'Klikšķis' } },
     { path: '/market', component: () => import('./views/MarketView.vue') },
     { path: '/nft/:id', component: () => import('./views/NftDetailView.vue'), props: true },
