@@ -5,7 +5,7 @@ export default createRouter({
   routes: [
     { path: '/', redirect: '/market' },
     { path: '/home', component: () => import('./views/HomeView.vue') },
-    { path: '/click', component: () => import('./views/ComingSoonView.vue'), props: { title: 'Klikšķis' } },
+    { path: '/click', component: () => import('./views/ClickerView.vue') },
     { path: '/market', component: () => import('./views/MarketView.vue') },
     { path: '/nft/:id', component: () => import('./views/NftDetailView.vue'), props: true },
     { path: '/profile', component: () => import('./views/ProfileView.vue') },
