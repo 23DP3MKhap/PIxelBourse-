@@ -1,9 +1,11 @@
+export type UserRole = 'user' | 'admin';
+
 export type User = {
     id: number;
-    name: string;
+    username: string;
     email: string;
-    avatar?: string;
-    email_verified_at: string | null;
+    coin_balance: number;
+    role: UserRole;
     created_at: string;
     updated_at: string;
     [key: string]: unknown;
