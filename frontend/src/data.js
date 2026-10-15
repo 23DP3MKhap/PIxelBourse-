@@ -6,7 +6,6 @@ export const nfts = [
 ]
 
 export const profile = {
-  name: 'HyperClicker', handle: '@cyberTapExpert',
   stats: [
     { label: 'KOPĀ $BORIS', value: '1,4 milj. $BORIS' },
     { label: 'PIEDEROŠIE NFT', value: '14 gab.' },

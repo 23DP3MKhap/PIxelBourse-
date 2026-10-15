@@ -2,16 +2,16 @@
 import { useRouter } from 'vue-router'
 import AppIcon from './AppIcon.vue'
 import { navItems } from './navItems'
-import { session, signOut } from '../session'
+import { session, logout } from '../session'
 
 const router = useRouter()
-const logout = () => { signOut(); router.push('/login') }
+const signOut = async () => { await logout(); router.push('/login') }
 </script>
 
 <template>
   <aside class="sidebar">
     <div>
-      <div class="brand"><i class="dot" />PixelBoris</div>
+      <div class="brand"><i class="dot" />TIRGUS</div>
       <nav class="list">
         <RouterLink v-for="n in navItems" :key="n.to" :to="n.to" class="item" active-class="active">
           <AppIcon :name="n.icon" /> {{ n.label }}
@@ -21,8 +21,8 @@ const logout = () => { signOut(); router.push('/login') }
     <div class="card widget">
       <template v-if="session.user">
         <span class="lbl">SESIJA</span>
-        <b>{{ session.user }}</b>
-        <button class="btn" @click="logout"><AppIcon name="logout" :size="14" /> Iziet</button>
+        <b>{{ session.user.username }}</b>
+        <button class="btn" @click="signOut"><AppIcon name="logout" :size="14" /> Iziet</button>
       </template>
       <RouterLink v-else to="/login" class="btn">Pieslēgties</RouterLink>
     </div>

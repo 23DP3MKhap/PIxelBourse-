@@ -1,15 +1,20 @@
 <script setup>
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { session } from '../session'
 import AppIcon from '../components/AppIcon.vue'
 import StatBox from '../components/StatBox.vue'
 import { nfts, fmt } from '../data'
 
 const props = defineProps({ id: String })
 const router = useRouter()
+const route = useRoute()
 const nft = computed(() => nfts.find((n) => n.id === Number(props.id)) ?? nfts[0])
 const price = computed(() => `${fmt(nft.value.price)} $BORIS`)
-const buy = () => alert(`Nopirkts: ${nft.value.title} (imitācija)`)
+const buy = () => {
+  if (!session.user) return router.push({ path: '/login', query: { redirect: route.fullPath } })
+  alert(`Nopirkts: ${nft.value.title} (imitācija)`)
+}
 </script>
 
 <template>
