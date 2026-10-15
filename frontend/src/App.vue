@@ -1,12 +1,14 @@
 <script setup>
 import AppSidebar from './components/AppSidebar.vue'
 import BottomNav from './components/BottomNav.vue'
+import ToastContainer from './components/ToastContainer.vue'
 </script>
 
 <template>
   <AppSidebar />
   <main class="main"><RouterView /></main>
   <BottomNav />
+  <ToastContainer />
 </template>
 
 <style>

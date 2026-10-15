@@ -9,6 +9,7 @@ export default createRouter({
     { path: '/market', component: () => import('./views/MarketView.vue') },
     { path: '/nft/:id', component: () => import('./views/NftDetailView.vue'), props: true },
     { path: '/profile', component: () => import('./views/ProfileView.vue') },
+    { path: '/403', component: () => import('./views/ForbiddenView.vue') },
     { path: '/login', component: () => import('./views/LoginView.vue') },
     { path: '/register', component: () => import('./views/RegisterView.vue') },
   ],
