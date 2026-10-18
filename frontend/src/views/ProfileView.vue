@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import NftCard from '../components/NftCard.vue'
 import StatBox from '../components/StatBox.vue'
 import { profile as p } from '../data'
+import { session } from '../session'
 
 const tab = ref('earned')
 const tabs = computed(() => [
@@ -15,8 +16,8 @@ const tabs = computed(() => [
   <section class="card head">
     <div class="ring"><div class="avatar" /></div>
     <div class="who">
-      <h1>{{ p.name }}</h1>
-      <p><span class="cy">{{ p.handle }}</span></p>
+      <h1>{{ session.user?.username }}</h1>
+      <p><span class="cy">{{ session.user?.email }}</span></p>
     </div>
     <div class="stats">
       <StatBox v-for="s in p.stats" :key="s.label" :label="s.label" :value="s.value" :tone="s.accent ? 'violet' : 'white'" />

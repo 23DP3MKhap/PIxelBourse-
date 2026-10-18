@@ -11,7 +11,7 @@ const items = computed(() => nfts.filter((n) => n.title.toLowerCase().includes(q
 <template>
   <header class="head">
     <div>
-      <h1>Tirgus</h1>
+      <h1>PixelBoris</h1>
       <p class="muted desk">Atklāj un iegādājies izcilus digitālos priekšmetus ar augstu mijiedarbību</p>
     </div>
     <div class="actions">
