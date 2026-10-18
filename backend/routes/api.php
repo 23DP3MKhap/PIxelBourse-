@@ -29,3 +29,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', AdminUserController::class)->except('store');
     });
 });
+
+// clicker
+Route::get('/images', [ImageController::class, 'index']);
+Route::get('/images/{id}', [ImageController::class, 'show']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/images', [ImageController::class, 'store']);
+    Route::post('/images/{id}', [ImageController::class, 'update']);
+    Route::delete('/images/{id}', [ImageController::class, 'destroy']);
+    Route::post('/clicker/sync', [ClickerController::class, 'sync'])->middleware('throttle:30,1');
+});
