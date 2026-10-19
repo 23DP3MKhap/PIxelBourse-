@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ClickerController;
+use App\Http\Controllers\ImageController;
 
 /*
 | All routes here are prefixed with /api. Authenticated routes expect the
@@ -35,6 +37,7 @@ Route::get('/images', [ImageController::class, 'index']);
 Route::get('/images/{id}', [ImageController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/my-image', [ImageController::class, 'mine']);
     Route::post('/images', [ImageController::class, 'store']);
     Route::post('/images/{id}', [ImageController::class, 'update']);
     Route::delete('/images/{id}', [ImageController::class, 'destroy']);
