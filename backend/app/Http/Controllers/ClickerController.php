@@ -9,21 +9,24 @@ use Illuminate\Support\Facades\Cache;
 class ClickerController extends Controller
 {
 
-    // POST /api/clicker/sync  { "count": 143 }
+    // POST /api/clicker/sync  { "image_id": 5, "count": 143 }
     public function sync(Request $request)
     {
         $request->validate([
-            'count' => ['required', 'integer', 'min:1'],
+            'image_id' => ['required', 'integer'],
+            'count'    => ['required', 'integer', 'min:1'],
         ]);
 
         $user = $request->user();
-        $image = Image::where('owner_id', $user->id)->first();
+        $image = Image::where('id', $request->image_id)
+            ->where('owner_id', $user->id)
+            ->first();
 
         if (!$image) {
             return response()->json(['message' => 'no image'], 404);
         }
 
-        $lastKey = "clicker_last_sync:{$user->id}";
+        $lastKey = "clicker_last_sync:{$user->id}:{$image->id}";
         $last = Cache::get($lastKey);
         $seconds = $last ? now()->timestamp - $last : 600;
         $seconds = max(2, min($seconds, 3600));

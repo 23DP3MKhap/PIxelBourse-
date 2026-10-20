@@ -37,7 +37,7 @@ Route::get('/images', [ImageController::class, 'index']);
 Route::get('/images/{id}', [ImageController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/my-image', [ImageController::class, 'mine']);
+    Route::get('/my-images', [ImageController::class, 'mine']);
     Route::post('/images', [ImageController::class, 'store']);
     Route::post('/images/{id}', [ImageController::class, 'update']);
     Route::delete('/images/{id}', [ImageController::class, 'destroy']);

@@ -11,10 +11,6 @@ class ImageController extends Controller
     // POST /api/images  
     public function store(Request $request)
     {
-        if (Image::where('owner_id', $request->user()->id)->exists()) {
-            return response()->json(['message' => 'Already own an image'], 409);
-        }
-
         $request->validate([
             'file'  => ['required', 'file', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'], // до 5 МБ
             'title' => ['nullable', 'string', 'max:100'],
@@ -42,16 +38,14 @@ class ImageController extends Controller
         return response()->json($images->map(fn ($image) => $this->format($image)));
     }
 
-    // GET /api/my-image
+    // GET /api/my-images
     public function mine(Request $request)
     {
-        $image = Image::where('owner_id', $request->user()->id)->first();
+        $images = Image::where('owner_id', $request->user()->id)
+            ->orderByDesc('created_at')
+            ->get();
 
-        if ($image) {
-            return response()->json($this->format($image));
-        }
-
-        return response()->json(null);
+        return response()->json($images->map(fn ($image) => $this->format($image)));
     }
 
     // GET /api/images/{id} 
