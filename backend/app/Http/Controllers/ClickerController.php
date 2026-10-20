@@ -26,6 +26,10 @@ class ClickerController extends Controller
             return response()->json(['message' => 'no image'], 404);
         }
 
+        if ($image->listings()->active()->exists()) {
+            return response()->json(['message' => 'image is listed on the market'], 409);
+        }
+
         $lastKey = "clicker_last_sync:{$user->id}:{$image->id}";
         $last = Cache::get($lastKey);
         $seconds = $last ? now()->timestamp - $last : 600;

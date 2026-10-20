@@ -1,16 +1,19 @@
 <script setup>
-import { reactive, ref, computed } from 'vue'
+import { ref, computed } from 'vue'
 import AppIcon from '../components/AppIcon.vue'
-import { profile as p, fmt } from '../data'
+import { fmt } from '../data'
+import { session } from '../session'
+import { useLoad } from '../composables/useLoad'
+import { imagesApi } from '../api/images'
 
-const collection = reactive([...p.earned, ...p.purchased].map((n) => ({ ...n, clicks: 0 })))
-const activeId = ref(collection[0]?.id)
-const active = computed(() => collection.find((n) => n.id === activeId.value))
+const { data: collection, loading, error, reload } = useLoad(imagesApi.mine, [])
+const activeId = ref(null)
+const active = computed(() => collection.value.find((n) => n.id === activeId.value) ?? collection.value[0])
 
 const onClick = () => {
   if (!active.value) return
-  active.value.clicks++
-  active.value.price++
+  active.value.clicks_count++ // local only, not synced to the server yet
+  active.value.value++
 }
 </script>
 
@@ -22,20 +25,23 @@ const onClick = () => {
     </div>
     <div class="card balance">
       <span class="l">TAVS ATLIKUMS</span>
-      <b class="val"><AppIcon name="diamond" :size="14" /> {{ p.stats[0].value }}</b>
+      <b class="val"><AppIcon name="diamond" :size="14" /> {{ fmt(session.user?.coin_balance) }}</b>
     </div>
   </header>
 
-  <section class="picker">
+  <p v-if="loading" class="state">Ielādē...</p>
+  <p v-else-if="error" class="state">{{ error }} <button class="retry" @click="reload">Mēģināt vēlreiz</button></p>
+  <p v-else-if="!collection.length" class="state">Tev vēl nav neviena attēla.</p>
+  <section v-else class="picker">
     <button
       v-for="n in collection"
       :key="n.id"
       class="thumb"
-      :class="{ on: n.id === activeId }"
-      :style="{ background: `radial-gradient(circle at 50% 40%, hsl(${n.hue} 90% 45% / .55), #05030a 70%)` }"
+      :class="{ on: n.id === active?.id }"
+      :style="{ backgroundImage: `url(${n.url})` }"
       @click="activeId = n.id"
     >
-      <span class="name">{{ n.title }}</span>
+      <span class="name">{{ n.title || 'Bez nosaukuma' }}</span>
     </button>
   </section>
 
@@ -44,8 +50,8 @@ const onClick = () => {
       class="art-btn"
       @click="onClick"
       :style="{
-        background: `radial-gradient(circle at 50% 40%, hsl(${active.hue} 90% 45% / .6), #05030a 70%)`,
-        boxShadow: `0 0 70px -12px hsl(${active.hue} 90% 55% / .55)`,
+        backgroundImage: `url(${active.url})`,
+        boxShadow: '0 0 70px -12px rgba(6, 182, 212, .55)',
       }"
     >
       <AppIcon name="zap" :size="40" />
@@ -54,11 +60,11 @@ const onClick = () => {
     <div class="stats">
       <div class="card stat clicks">
         <span class="l">KLIKŠĶI</span>
-        <b>{{ fmt(active.clicks) }}</b>
+        <b>{{ fmt(active.clicks_count) }}</b>
       </div>
       <div class="card stat value">
         <span class="l">VĒRTĪBA</span>
-        <b><AppIcon name="diamond" :size="14" /> {{ fmt(active.price) }} $BORIS</b>
+        <b><AppIcon name="diamond" :size="14" /> {{ fmt(active.value) }} $BORIS</b>
       </div>
     </div>
   </section>
@@ -73,12 +79,12 @@ h1 { font-size: 22px; font-weight: 800; }
 .balance .val { display: flex; align-items: center; gap: 6px; font-size: 16px; font-weight: 800; color: var(--cyan); }
 
 .picker { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 24px; }
-.thumb { flex: 0 0 72px; aspect-ratio: 1; border-radius: 14px; border: 2px solid transparent; position: relative; overflow: hidden; }
+.thumb { flex: 0 0 72px; aspect-ratio: 1; background: var(--input) center / cover; border-radius: 14px; border: 2px solid transparent; position: relative; overflow: hidden; }
 .thumb.on { border-color: var(--cyan); }
 .thumb .name { position: absolute; inset: auto 0 0 0; padding: 4px 6px; font-size: 9px; font-weight: 700; background: rgba(0,0,0,.55); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .stage { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.art-btn { width: 220px; aspect-ratio: 1; border-radius: 28px; border: 1px solid var(--border); display: grid; place-items: center; color: #fff; transition: transform .08s ease; }
+.art-btn { width: 220px; aspect-ratio: 1; background: var(--input) center / cover; border-radius: 28px; border: 1px solid var(--border); display: grid; place-items: center; color: #fff; transition: transform .08s ease; }
 .art-btn:active { transform: scale(.96); }
 
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 340px; }

@@ -35,6 +35,9 @@ class Image extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    /**
+     * @return HasMany<Listing, $this>
+     */
     public function listings(): HasMany
     {
         return $this->hasMany(Listing::class);

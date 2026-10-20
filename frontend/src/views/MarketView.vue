@@ -2,10 +2,12 @@
 import { ref, computed } from 'vue'
 import AppIcon from '../components/AppIcon.vue'
 import NftCard from '../components/NftCard.vue'
-import { nfts } from '../data'
+import { useLoad } from '../composables/useLoad'
+import { imagesApi } from '../api/images'
 
 const query = ref('')
-const items = computed(() => nfts.filter((n) => n.title.toLowerCase().includes(query.value.toLowerCase())))
+const { data: images, loading, error, reload } = useLoad(imagesApi.list, [])
+const items = computed(() => images.value.filter((n) => (n.title || '').toLowerCase().includes(query.value.toLowerCase())))
 </script>
 
 <template>
@@ -19,7 +21,10 @@ const items = computed(() => nfts.filter((n) => n.title.toLowerCase().includes(q
       <button class="icon-btn" aria-label="Filtri"><AppIcon name="sliders" :size="16" /></button>
     </div>
   </header>
-  <section class="grid"><NftCard v-for="n in items" :key="n.id" :nft="n" :to="`/nft/${n.id}`" /></section>
+  <p v-if="loading" class="state">Ielādē...</p>
+  <p v-else-if="error" class="state">{{ error }} <button class="retry" @click="reload">Mēģināt vēlreiz</button></p>
+  <p v-else-if="!items.length" class="state">Nekas nav atrasts.</p>
+  <section v-else class="grid"><NftCard v-for="n in items" :key="n.id" :nft="n" :to="`/nft/${n.id}`" /></section>
 </template>
 
 <style scoped>
