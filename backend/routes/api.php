@@ -21,6 +21,8 @@ Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
 });
 
+Route::get('/users/{user}', [ProfileController::class, 'showById'])->whereNumber('user');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('user', [ProfileController::class, 'update'])->name('profile.update');

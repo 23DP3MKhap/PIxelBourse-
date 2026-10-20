@@ -59,4 +59,12 @@ class ProfileController extends Controller
 
         return response()->noContent();
     }
+
+    /**
+     * Basic info about any user by id.
+     */
+    public function showById(User $user): UserResource
+    {
+        return new UserResource($user);
+    }
 }
