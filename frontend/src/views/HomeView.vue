@@ -1,23 +1,27 @@
 <script setup>
+import { computed } from 'vue'
 import AppIcon from '../components/AppIcon.vue'
 import NftCard from '../components/NftCard.vue'
-import { profile as p } from '../data'
+import { fmt } from '../data'
 import { session } from '../session'
+import { useLoad } from '../composables/useLoad'
+import { imagesApi } from '../api/images'
 
-const collection = [...p.earned, ...p.purchased].slice(0, 4)
+const { data: mine } = useLoad(imagesApi.mine, [])
+const collection = computed(() => mine.value.slice(0, 4))
 </script>
 
 <template>
   <header class="head">
     <div>
-      <h1>Sveicināts, {{ session.user || p.name }}</h1>
+      <h1>Sveicināts, {{ session.user?.username }}</h1>
       <p class="muted desk">Seko savai kolekcijai, klikšķini un pelni $BORIS</p>
     </div>
   </header>
 
   <section class="card balance">
     <span class="l">KOPĀ $BORIS</span>
-    <b class="val"><AppIcon name="diamond" :size="18" /> {{ p.stats[0].value }}</b>
+    <b class="val"><AppIcon name="diamond" :size="18" /> {{ fmt(session.user?.coin_balance) }}</b>
   </section>
 
   <section class="actions">
@@ -38,7 +42,7 @@ const collection = [...p.earned, ...p.purchased].slice(0, 4)
       <h2>Tava kolekcija</h2>
       <RouterLink to="/profile" class="muted">Skatīt visu</RouterLink>
     </div>
-    <div class="grid"><NftCard v-for="n in collection" :key="n.id" :nft="n" variant="owned" /></div>
+    <div class="grid"><NftCard v-for="n in collection" :key="n.id" :nft="n" :to="`/nft/${n.id}`" variant="owned" /></div>
   </section>
 </template>
 
