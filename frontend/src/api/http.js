@@ -12,21 +12,28 @@ export class ApiError extends Error {
     super(data?.message || `Pieprasījums neizdevās (${status})`)
     this.status = status
     this.errors = data?.errors || {}
+    this.data = data
   }
 }
 
 let onUnauthorized = () => {}
 export const setUnauthorizedHandler = (fn) => (onUnauthorized = fn)
 
-export async function http(method, path, body) {
+export async function http(method, path, body, { keepalive = false } = {}) {
   const token = tokenStore.get()
   const headers = { Accept: 'application/json' }
   if (token) headers.Authorization = `Bearer ${token}`
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  const isForm = body instanceof FormData
+  if (body !== undefined && !isForm) headers['Content-Type'] = 'application/json'
 
   let res
   try {
-    res = await fetch(BASE + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) })
+    res = await fetch(BASE + path, {
+      method,
+      headers,
+      body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
+      keepalive,
+    })
   } catch {
     throw new ApiError(0, { message: 'Neizdevās savienoties ar serveri.' })
   }
@@ -41,7 +48,7 @@ export async function http(method, path, body) {
 
 export const api = {
   get: (p) => http('GET', p),
-  post: (p, b) => http('POST', p, b ?? {}),
+  post: (p, b, opts) => http('POST', p, b ?? {}, opts),
   patch: (p, b) => http('PATCH', p, b),
   put: (p, b) => http('PUT', p, b),
   delete: (p, b) => http('DELETE', p, b),

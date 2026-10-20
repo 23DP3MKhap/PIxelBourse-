@@ -7,7 +7,8 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/market' },
     { path: '/home', component: () => import('./views/HomeView.vue') },
-    { path: '/click', component: () => import('./views/ClickerView.vue') },
+    { path: '/click', component: () => import('./views/ClickerView.vue'), meta: { auth: true } },
+    { path: '/collection', component: () => import('./views/CollectionView.vue'), meta: { auth: true } },
     { path: '/market', component: () => import('./views/MarketView.vue') },
     { path: '/nft/:id', component: () => import('./views/NftDetailView.vue'), props: true },
     { path: '/403', component: () => import('./views/ForbiddenView.vue') },

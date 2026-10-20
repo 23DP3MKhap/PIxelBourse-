@@ -24,3 +24,16 @@ export const adminApi = {
   update: (id, b) => api.patch(`/admin/users/${id}`, b), // username, email, role
   remove: (id) => api.delete(`/admin/users/${id}`),
 }
+
+export const imagesApi = {
+  top: () => api.get('/images'), // top-50, publiski pieejams
+  get: (id) => api.get(`/images/${id}`),
+  mine: () => api.get('/my-images'),
+  upload: (form) => api.post('/images', form), // FormData
+  rename: (id, title) => api.post(`/images/${id}`, { title }),
+  remove: (id) => api.delete(`/images/${id}`),
+}
+
+export const clickerApi = {
+  sync: (imageId, count, opts) => api.post('/clicker/sync', { image_id: imageId, count }, opts),
+}
