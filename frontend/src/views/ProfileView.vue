@@ -1,14 +1,16 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import NftCard from '../components/NftCard.vue'
 import StatBox from '../components/StatBox.vue'
-import { profile as p } from '../data'
 import { session } from '../session'
+import { fmt } from '../data'
+import { useLoad } from '../composables/useLoad'
+import { imagesApi } from '../api/images'
 
-const tab = ref('earned')
-const tabs = computed(() => [
-  { key: 'earned', label: `Nopelnīti (${p.earned.length})` },
-  { key: 'purchased', label: `Nopirkti (${p.purchased.length})` },
+const { data: mine, loading, error, reload } = useLoad(imagesApi.mine, [])
+const stats = computed(() => [
+  { label: 'KOPĀ $BORIS', value: `${fmt(session.user?.coin_balance)} $BORIS` },
+  { label: 'PIEDEROŠIE NFT', value: `${mine.value.length} gab.` },
 ])
 </script>
 
@@ -20,14 +22,15 @@ const tabs = computed(() => [
       <p><span class="cy">{{ session.user?.email }}</span></p>
     </div>
     <div class="stats">
-      <StatBox v-for="s in p.stats" :key="s.label" :label="s.label" :value="s.value" :tone="s.accent ? 'violet' : 'white'" />
+      <StatBox v-for="s in stats" :key="s.label" :label="s.label" :value="s.value" tone="white" />
     </div>
   </section>
 
-  <div class="tabs">
-    <button v-for="t in tabs" :key="t.key" :class="{ on: tab === t.key }" @click="tab = t.key">{{ t.label }}</button>
-  </div>
-  <section class="grid"><NftCard v-for="n in p[tab]" :key="n.id" :nft="n" variant="owned" /></section>
+  <h2>Mani attēli</h2>
+  <p v-if="loading" class="state">Ielādē...</p>
+  <p v-else-if="error" class="state">{{ error }} <button class="retry" @click="reload">Mēģināt vēlreiz</button></p>
+  <p v-else-if="!mine.length" class="state">Tev vēl nav neviena attēla.</p>
+  <section v-else class="grid"><NftCard v-for="n in mine" :key="n.id" :nft="n" :to="`/nft/${n.id}`" variant="owned" /></section>
 </template>
 
 <style scoped>
@@ -39,9 +42,7 @@ h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
 .cy { color: var(--cyan); font-weight: 600; }
 .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; text-align: left; }
 .stats :deep(b) { font-size: 14px; }
-.tabs { display: flex; padding: 4px; background: var(--panel); border-radius: 12px; margin-bottom: 24px; max-width: 320px; }
-.tabs button { flex: 1; height: 36px; border: 0; border-radius: 8px; background: none; color: var(--muted); font-size: 13px; }
-.tabs .on { background: var(--surface); color: #fff; font-weight: 700; }
+h2 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
 @media (min-width: 900px) {
   .head { flex-direction: row; padding: 32px; gap: 32px; text-align: left; margin-bottom: 32px; }
   .who { flex: 0 0 auto; } .who p { justify-content: flex-start; font-size: 14px; } h1 { font-size: 26px; }

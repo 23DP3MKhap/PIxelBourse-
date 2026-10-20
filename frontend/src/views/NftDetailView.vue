@@ -1,19 +1,23 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { session } from '../session'
 import AppIcon from '../components/AppIcon.vue'
 import StatBox from '../components/StatBox.vue'
-import { nfts, fmt } from '../data'
+import { fmt } from '../data'
+import { useLoad } from '../composables/useLoad'
+import { imagesApi } from '../api/images'
 
 const props = defineProps({ id: String })
 const router = useRouter()
 const route = useRoute()
-const nft = computed(() => nfts.find((n) => n.id === Number(props.id)) ?? nfts[0])
-const price = computed(() => `${fmt(nft.value.price)} $BORIS`)
+const { data: nft, loading, error, reload } = useLoad(() => imagesApi.get(props.id))
+watch(() => props.id, reload)
+const price = computed(() => (nft.value ? `${fmt(nft.value.value)} $BORIS` : ''))
+const mine = computed(() => nft.value && session.user?.id === nft.value.owner_id)
 const buy = () => {
   if (!session.user) return router.push({ path: '/login', query: { redirect: route.fullPath } })
-  alert(`Nopirkts: ${nft.value.title} (imitācija)`)
+  alert(`Nopirkts: ${nft.value.title || 'attēls'} (imitācija)`)
 }
 </script>
 
@@ -22,11 +26,13 @@ const buy = () => {
     <button class="back" @click="router.push('/market')"><span class="icon-btn"><AppIcon name="back" :size="16" /></span><span class="muted lbl">Atpakaļ uz tirgu</span></button>
   </div>
 
-  <div class="split">
+  <p v-if="loading" class="state">Ielādē...</p>
+  <p v-else-if="error" class="state">{{ error }} <button class="retry" @click="reload">Mēģināt vēlreiz</button></p>
+  <div v-else class="split">
     <section class="left">
-      <div class="art" :style="{ background: `radial-gradient(circle at 50% 40%, hsl(${nft.hue} 90% 45% / .55), #05030a 70%)` }" />
+      <img class="art" :src="nft.url" :alt="nft.title || ''" />
       <div class="ident">
-        <div><h1>{{ nft.title }}</h1><p class="muted">Pieder @{{ nft.owner }}</p></div>
+        <div><h1>{{ nft.title || 'Bez nosaukuma' }}</h1><p class="muted">{{ mine ? 'Tavs attēls' : `Īpašnieks #${nft.owner_id}` }}</p></div>
         <StatBox label="KOPĒJĀ VĒRTĪBA" :value="price" />
       </div>
     </section>
@@ -40,7 +46,7 @@ const buy = () => {
           <polyline points="0,60 40,50 80,55 120,30 160,38 200,20 240,28 280,12 320,18" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
-      <div class="card pad">
+      <div v-if="!mine" class="card pad">
         <div class="row"><span class="muted">Pārdošanas cena</span><b class="cy"><AppIcon name="diamond" /> {{ price }}</b></div>
         <button class="grad-btn" @click="buy"><AppIcon name="zap" /> PIRKT TAGAD</button>
       </div>
@@ -54,7 +60,7 @@ const buy = () => {
 .lbl { font-weight: 600; font-size: 14px; display: none; }
 .split { display: flex; flex-direction: column; gap: 24px; }
 .left, .right { display: flex; flex-direction: column; gap: 24px; }
-.art { height: 260px; border-radius: 24px; border: 2px solid var(--violet); }
+.art { width: 100%; height: 260px; object-fit: contain; background: var(--panel); border-radius: 24px; border: 2px solid var(--violet); }
 .ident { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
 .pad { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
