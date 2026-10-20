@@ -26,5 +26,7 @@ class DatabaseSeeder extends Seeder
             'username' => 'admin',
             'email' => 'admin@example.com',
         ]);
+
+        $this->call(MarketSeeder::class);
     }
 }

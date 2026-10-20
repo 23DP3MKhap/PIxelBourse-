@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClickerController;
@@ -32,6 +33,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::apiResource('users', AdminUserController::class)->except('store');
     });
+});
+
+Route::get('listings', [ListingController::class, 'index'])->name('listings.index');
+Route::get('listings/{listing}', [ListingController::class, 'show'])->whereNumber('listing')->name('listings.show');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('my-listings', [ListingController::class, 'mine'])->name('listings.mine');
+    Route::post('listings', [ListingController::class, 'store'])->name('listings.store');
+    Route::patch('listings/{listing}', [ListingController::class, 'update'])->whereNumber('listing')->name('listings.update');
+    Route::delete('listings/{listing}', [ListingController::class, 'destroy'])->whereNumber('listing')->name('listings.destroy');
+    Route::post('listings/{listing}/buy', [ListingController::class, 'buy'])->whereNumber('listing')->name('listings.buy');
 });
 
 // clicker
