@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('owner_id')->constrained('users');
             $table->string('title', 100)->nullable();
             $table->string('file_path', 255);
-            $table->unsignedBigInteger('click_count')->default(0);
+            $table->unsignedBigInteger('clicks_count')->default(0);
             $table->unsignedBigInteger('value')->default(0);
             $table->timestamps();
         });

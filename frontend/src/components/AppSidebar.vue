@@ -3,9 +3,10 @@ import { useRouter } from 'vue-router'
 import AppIcon from './AppIcon.vue'
 import { navItems } from './navItems'
 import { session, logout } from '../session'
+import { syncAll, resetClicker } from '../clicker'
 
 const router = useRouter()
-const signOut = async () => { await logout(); router.push('/login') }
+const signOut = async () => { await syncAll(); await logout(); resetClicker(); router.push('/login') }
 </script>
 
 <template>
