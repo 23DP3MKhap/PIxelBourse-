@@ -25,11 +25,17 @@ class Image extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function uploader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'uploader_id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
@@ -43,11 +49,17 @@ class Image extends Model
         return $this->hasMany(Listing::class);
     }
 
+    /**
+     * @return HasMany<Trade, $this>
+     */
     public function offeredInTrades(): HasMany
     {
         return $this->hasMany(Trade::class, 'offered_image_id');
     }
 
+    /**
+     * @return HasMany<Trade, $this>
+     */
     public function requestedInTrades(): HasMany
     {
         return $this->hasMany(Trade::class, 'requested_image_id');

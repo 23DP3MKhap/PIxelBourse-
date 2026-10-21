@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\ImageController as AdminImageController;
+use App\Http\Controllers\Api\Admin\ListingController as AdminListingController;
+use App\Http\Controllers\Api\Admin\StatsController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HistoryController;
@@ -34,6 +37,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::apiResource('users', AdminUserController::class)->except('store');
+        Route::get('images', [AdminImageController::class, 'index'])->name('images.index');
+        Route::delete('images/{image}', [AdminImageController::class, 'destroy'])->whereNumber('image')->name('images.destroy');
+        Route::delete('listings/{listing}', [AdminListingController::class, 'destroy'])->whereNumber('listing')->name('listings.destroy');
+        Route::get('stats', StatsController::class)->name('stats');
     });
 });
 

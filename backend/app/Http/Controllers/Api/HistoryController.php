@@ -58,19 +58,17 @@ class HistoryController extends Controller
             ->where('type', $type)
             ->with(['listing.image', 'listing.seller', 'listing.buyer'])
             ->get()
-            ->filter(fn (CoinTransaction $transaction) => $transaction->listing !== null)
             ->map(fn (CoinTransaction $transaction) => [
                 'type' => $bought ? 'bought' : 'sold',
                 'date' => $transaction->created_at,
                 'coins' => $transaction->amount,
                 'fee' => $transaction->fee,
-                'received_image' => $bought ? $this->image($transaction->listing->image) : null,
-                'given_image' => $bought ? null : $this->image($transaction->listing->image),
-                'other_user' => $this->user($bought ? $transaction->listing->seller : $transaction->listing->buyer),
+                'received_image' => $bought ? $this->image($transaction->listing?->image) : null,
+                'given_image' => $bought ? null : $this->image($transaction->listing?->image),
+                'other_user' => $this->user($bought ? $transaction->listing?->seller : $transaction->listing?->buyer),
                 'listing_id' => $transaction->listing_id,
                 'trade_id' => null,
             ])
-            ->values()
             ->all();
     }
 
@@ -103,11 +101,11 @@ class HistoryController extends Controller
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed>|null
      */
-    private function image(Image $image): array
+    private function image(?Image $image): ?array
     {
-        return [
+        return $image === null ? null : [
             'id' => $image->id,
             'title' => $image->title,
             'url' => $image->file_path,

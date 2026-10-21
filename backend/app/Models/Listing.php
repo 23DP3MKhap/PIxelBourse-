@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Listing extends Model
 {
@@ -45,6 +46,21 @@ class Listing extends Model
     public function isActive(): bool
     {
         return $this->status === self::STATUS_ACTIVE;
+    }
+
+    public function cancel(): void
+    {
+        DB::transaction(function () {
+            $this->update([
+                'status' => self::STATUS_CANCELLED,
+                'closed_at' => now(),
+            ]);
+
+            $this->trades()->pending()->update([
+                'status' => Trade::STATUS_CANCELLED,
+                'responded_at' => now(),
+            ]);
+        });
     }
 
     public static function feeFor(int $price): int
@@ -92,6 +108,9 @@ class Listing extends Model
         return $this->hasMany(Trade::class);
     }
 
+    /**
+     * @return HasMany<CoinTransaction, $this>
+     */
     public function coinTransactions(): HasMany
     {
         return $this->hasMany(CoinTransaction::class);

@@ -115,17 +115,7 @@ class ListingController extends Controller
     {
         $this->ensureSellerCanChange($listing, $user);
 
-        DB::transaction(function () use ($listing) {
-            $listing->update([
-                'status' => Listing::STATUS_CANCELLED,
-                'closed_at' => now(),
-            ]);
-
-            $listing->trades()->pending()->update([
-                'status' => Trade::STATUS_CANCELLED,
-                'responded_at' => now(),
-            ]);
-        });
+        $listing->cancel();
 
         return new ListingResource($listing->load(['image', 'seller']));
     }
