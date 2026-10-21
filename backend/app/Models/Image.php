@@ -13,14 +13,14 @@ class Image extends Model
         'owner_id',
         'title',
         'file_path',
-        'click_count',
+        'clicks_count',
         'value',
     ];
 
     protected function casts(): array
     {
         return [
-            'click_count' => 'integer',
+            'clicks_count' => 'integer',
             'value' => 'integer',
         ];
     }

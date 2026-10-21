@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\HistoryController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\TradeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClickerController;
 use App\Http\Controllers\ImageController;
@@ -44,6 +46,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('listings/{listing}', [ListingController::class, 'update'])->whereNumber('listing')->name('listings.update');
     Route::delete('listings/{listing}', [ListingController::class, 'destroy'])->whereNumber('listing')->name('listings.destroy');
     Route::post('listings/{listing}/buy', [ListingController::class, 'buy'])->whereNumber('listing')->name('listings.buy');
+
+    Route::get('trades', [TradeController::class, 'index'])->name('trades.index');
+    Route::post('trades', [TradeController::class, 'store'])->name('trades.store');
+    Route::get('trades/{trade}', [TradeController::class, 'show'])->whereNumber('trade')->name('trades.show');
+    Route::post('trades/{trade}/accept', [TradeController::class, 'accept'])->whereNumber('trade')->name('trades.accept');
+    Route::post('trades/{trade}/decline', [TradeController::class, 'decline'])->whereNumber('trade')->name('trades.decline');
+    Route::post('trades/{trade}/cancel', [TradeController::class, 'cancel'])->whereNumber('trade')->name('trades.cancel');
+
+    Route::get('history', HistoryController::class)->name('history');
 });
 
 // clicker

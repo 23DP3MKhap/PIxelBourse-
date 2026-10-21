@@ -39,7 +39,7 @@ class MarketSeeder extends Seeder
                 'owner_id' => $seller->id,
                 'title' => $title,
                 'file_path' => 'https://picsum.photos/seed/pixelboris'.($i + 1).'/600/600',
-                'click_count' => $clicks,
+                'clicks_count' => $clicks,
                 'value' => $clicks,
             ]);
 

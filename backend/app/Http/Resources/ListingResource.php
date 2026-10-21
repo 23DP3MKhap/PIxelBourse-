@@ -26,7 +26,7 @@ class ListingResource extends JsonResource
                 'id' => $this->image->id,
                 'title' => $this->image->title,
                 'url' => $this->image->file_path,
-                'click_count' => $this->image->click_count,
+                'clicks_count' => $this->image->clicks_count,
                 'value' => $this->image->value,
             ],
             'seller' => [

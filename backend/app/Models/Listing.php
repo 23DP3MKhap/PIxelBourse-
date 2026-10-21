@@ -84,6 +84,9 @@ class Listing extends Model
         return $this->belongsTo(User::class, 'buyer_id');
     }
 
+    /**
+     * @return HasMany<Trade, $this>
+     */
     public function trades(): HasMany
     {
         return $this->hasMany(Trade::class);

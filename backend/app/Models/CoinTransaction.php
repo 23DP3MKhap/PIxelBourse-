@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CoinTransaction extends Model
 {
     public const TYPE_REWARD = 'reward';
+
     public const TYPE_PURCHASE = 'purchase';
+
     public const TYPE_SALE = 'sale';
+
     public const TYPE_ADJUSTMENT = 'adjustment';
 
     public const UPDATED_AT = null;
@@ -30,11 +33,17 @@ class CoinTransaction extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<Listing, $this>
+     */
     public function listing(): BelongsTo
     {
         return $this->belongsTo(Listing::class);

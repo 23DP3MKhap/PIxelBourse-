@@ -9,6 +9,7 @@ use App\Http\Resources\ListingResource;
 use App\Models\CoinTransaction;
 use App\Models\Image;
 use App\Models\Listing;
+use App\Models\Trade;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Request;
@@ -61,7 +62,7 @@ class ListingController extends Controller
             'price_asc' => $query->orderByRaw('price is null')->orderBy('price'),
             'price_desc' => $query->orderByRaw('price is null')->orderByDesc('price'),
             'value_desc' => $query->orderByDesc(Image::select('value')->whereColumn('images.id', 'listings.image_id')),
-            'clicks_desc' => $query->orderByDesc(Image::select('click_count')->whereColumn('images.id', 'listings.image_id')),
+            'clicks_desc' => $query->orderByDesc(Image::select('clicks_count')->whereColumn('images.id', 'listings.image_id')),
             default => $query->latest('id'),
         };
 
@@ -114,10 +115,17 @@ class ListingController extends Controller
     {
         $this->ensureSellerCanChange($listing, $user);
 
-        $listing->update([
-            'status' => Listing::STATUS_CANCELLED,
-            'closed_at' => now(),
-        ]);
+        DB::transaction(function () use ($listing) {
+            $listing->update([
+                'status' => Listing::STATUS_CANCELLED,
+                'closed_at' => now(),
+            ]);
+
+            $listing->trades()->pending()->update([
+                'status' => Trade::STATUS_CANCELLED,
+                'responded_at' => now(),
+            ]);
+        });
 
         return new ListingResource($listing->load(['image', 'seller']));
     }
@@ -148,6 +156,8 @@ class ListingController extends Controller
             $seller->increment('coin_balance', $earned);
 
             $image->update(['owner_id' => $buyer->id]);
+
+            Trade::cancelPendingInvolving([$image->id]);
 
             $listing->update([
                 'status' => Listing::STATUS_SOLD,
