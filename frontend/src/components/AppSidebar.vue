@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router'
 import AppIcon from './AppIcon.vue'
 import { navItems } from './navItems'
-import { session, logout } from '../session'
+import { session, logout, isAdmin } from '../session'
 import { syncAll, resetClicker } from '../clicker'
 
 const router = useRouter()
@@ -14,7 +14,7 @@ const signOut = async () => { await syncAll(); await logout(); resetClicker(); r
     <div>
       <div class="brand"><i class="dot" />TIRGUS</div>
       <nav class="list">
-        <RouterLink v-for="n in navItems" :key="n.to" :to="n.to" class="item" active-class="active">
+                <RouterLink v-for="n in navItems.filter((n) => !n.adminOnly || isAdmin())" :key="n.to" :to="n.to" class="item" active-class="active">
           <AppIcon :name="n.icon" /> {{ n.label }}
         </RouterLink>
       </nav>

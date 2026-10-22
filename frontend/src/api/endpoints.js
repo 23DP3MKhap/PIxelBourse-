@@ -23,6 +23,14 @@ export const adminApi = {
   get: (id) => api.get(`/admin/users/${id}`),
   update: (id, b) => api.patch(`/admin/users/${id}`, b), // username, email, role
   remove: (id) => api.delete(`/admin/users/${id}`),
+  images: (params) => api.get(`/admin/images${qs(params)}`), // { search, owner_id }
+  removeImage: (id) => api.delete(`/admin/images/${id}`),
+  cancelListing: (id) => api.delete(`/admin/listings/${id}`),
+  stats: () => api.get('/admin/stats'),
+}
+
+export const listingsApi = {
+  list: (params) => api.get(`/listings${qs(params)}`), // { search, type, min_price, max_price, sort }
 }
 
 export const imagesApi = {

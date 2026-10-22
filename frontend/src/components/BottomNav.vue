@@ -1,11 +1,12 @@
 <script setup>
 import AppIcon from './AppIcon.vue'
 import { navItems } from './navItems'
+import { isAdmin } from '../session'
 </script>
 
 <template>
   <nav class="bottom">
-    <RouterLink v-for="n in navItems" :key="n.to" :to="n.to" class="tab" active-class="active">
+    <RouterLink v-for="n in navItems.filter((n) => !n.adminOnly || isAdmin())" :key="n.to" :to="n.to" class="tab" active-class="active">
       <AppIcon :name="n.icon" :size="22" /><span>{{ n.label }}</span>
     </RouterLink>
   </nav>
