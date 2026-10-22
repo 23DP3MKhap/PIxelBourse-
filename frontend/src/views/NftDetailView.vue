@@ -1,6 +1,6 @@
 <script setup>
 import { computed, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { session } from '../session'
 import AppIcon from '../components/AppIcon.vue'
 import StatBox from '../components/StatBox.vue'
@@ -10,15 +10,10 @@ import { imagesApi } from '../api/images'
 
 const props = defineProps({ id: String })
 const router = useRouter()
-const route = useRoute()
 const { data: nft, loading, error, reload } = useLoad(() => imagesApi.get(props.id))
 watch(() => props.id, reload)
 const price = computed(() => (nft.value ? `${fmt(nft.value.value)} $BORIS` : ''))
 const mine = computed(() => nft.value && session.user?.id === nft.value.owner_id)
-const buy = () => {
-  if (!session.user) return router.push({ path: '/login', query: { redirect: route.fullPath } })
-  alert(`Nopirkts: ${nft.value.title || 'attēls'} (imitācija)`)
-}
 </script>
 
 <template>
@@ -45,10 +40,6 @@ const buy = () => {
           <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#8b5cf6" /><stop offset="1" stop-color="#06b6d4" /></linearGradient></defs>
           <polyline points="0,60 40,50 80,55 120,30 160,38 200,20 240,28 280,12 320,18" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-      </div>
-      <div v-if="!mine" class="card pad">
-        <div class="row"><span class="muted">Pārdošanas cena</span><b class="cy"><AppIcon name="diamond" /> {{ price }}</b></div>
-        <button class="grad-btn" @click="buy"><AppIcon name="zap" /> PIRKT TAGAD</button>
       </div>
     </section>
   </div>

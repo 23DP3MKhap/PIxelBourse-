@@ -2,6 +2,7 @@
 import AppSidebar from './components/AppSidebar.vue'
 import BottomNav from './components/BottomNav.vue'
 import ToastContainer from './components/ToastContainer.vue'
+import ConfirmHost from './components/ConfirmHost.vue'
 </script>
 
 <template>
@@ -9,6 +10,7 @@ import ToastContainer from './components/ToastContainer.vue'
   <main class="main"><RouterView /></main>
   <BottomNav />
   <ToastContainer />
+  <ConfirmHost />
 </template>
 
 <style>
