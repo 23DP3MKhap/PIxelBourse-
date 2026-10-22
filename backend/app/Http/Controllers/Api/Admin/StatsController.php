@@ -18,6 +18,7 @@ class StatsController extends Controller
     public function __invoke(): JsonResponse
     {
         $sales = CoinTransaction::query()->where('type', CoinTransaction::TYPE_SALE);
+        $siteSales = CoinTransaction::query()->where('type', CoinTransaction::TYPE_SITE_SALE);
 
         return response()->json([
             'users' => [
@@ -41,7 +42,9 @@ class StatsController extends Controller
                 'in_circulation' => (int) User::sum('coin_balance'),
                 'sales_count' => (clone $sales)->count(),
                 'turnover' => (int) -CoinTransaction::where('type', CoinTransaction::TYPE_PURCHASE)->sum('amount'),
-                'fees' => (int) (clone $sales)->sum('fee'),
+                'site_sales_count' => (clone $siteSales)->count(),
+                'paid_by_site' => (int) (clone $siteSales)->sum('amount'),
+                'fees' => (int) CoinTransaction::whereIn('type', [CoinTransaction::TYPE_SALE, CoinTransaction::TYPE_SITE_SALE])->sum('fee'),
             ],
         ]);
     }

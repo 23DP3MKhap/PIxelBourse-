@@ -21,7 +21,7 @@ class HistoryController extends Controller
     public function __invoke(Request $request, #[CurrentUser] User $user): AnonymousResourceCollection
     {
         $request->validate([
-            'type' => ['nullable', Rule::in(['bought', 'sold', 'traded'])],
+            'type' => ['nullable', Rule::in(['bought', 'sold', 'traded', 'sold_to_site'])],
             'page' => ['nullable', 'integer', 'min:1'],
         ]);
 
@@ -31,6 +31,7 @@ class HistoryController extends Controller
             ->merge($type === null || $type === 'bought' ? $this->coinEntries($user, CoinTransaction::TYPE_PURCHASE) : [])
             ->merge($type === null || $type === 'sold' ? $this->coinEntries($user, CoinTransaction::TYPE_SALE) : [])
             ->merge($type === null || $type === 'traded' ? $this->tradeEntries($user) : [])
+            ->merge($type === null || $type === 'sold_to_site' ? $this->siteSaleEntries($user) : [])
             ->sortByDesc('date')
             ->values();
 
@@ -97,6 +98,28 @@ class HistoryController extends Controller
                     'trade_id' => $trade->id,
                 ];
             })
+            ->all();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function siteSaleEntries(User $user): array
+    {
+        return $user->coinTransactions()
+            ->where('type', CoinTransaction::TYPE_SITE_SALE)
+            ->get()
+            ->map(fn (CoinTransaction $transaction) => [
+                'type' => 'sold_to_site',
+                'date' => $transaction->created_at,
+                'coins' => $transaction->amount,
+                'fee' => $transaction->fee,
+                'received_image' => null,
+                'given_image' => null,
+                'other_user' => null,
+                'listing_id' => null,
+                'trade_id' => null,
+            ])
             ->all();
     }
 

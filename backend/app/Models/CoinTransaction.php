@@ -15,6 +15,8 @@ class CoinTransaction extends Model
 
     public const TYPE_ADJUSTMENT = 'adjustment';
 
+    public const TYPE_SITE_SALE = 'site_sale';
+
     public const UPDATED_AT = null;
 
     protected $fillable = [

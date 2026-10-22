@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\StatsController;
 use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\HistoryController;
+use App\Http\Controllers\Api\ImageSaleController;
 use App\Http\Controllers\Api\ListingController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TradeController;
@@ -62,6 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('trades/{trade}/cancel', [TradeController::class, 'cancel'])->whereNumber('trade')->name('trades.cancel');
 
     Route::get('history', HistoryController::class)->name('history');
+
+    Route::post('images/{image}/sell', ImageSaleController::class)->whereNumber('image')->name('images.sell');
 });
 
 // clicker

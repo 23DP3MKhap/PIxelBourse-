@@ -5,9 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Image extends Model
 {
+    public function deleteWithMarketHistory(): void
+    {
+        DB::transaction(function () {
+            Trade::query()
+                ->where('offered_image_id', $this->id)
+                ->orWhere('requested_image_id', $this->id)
+                ->delete();
+
+            Listing::query()->where('image_id', $this->id)->delete();
+
+            $this->delete();
+        });
+    }
+
     protected $fillable = [
         'uploader_id',
         'owner_id',
