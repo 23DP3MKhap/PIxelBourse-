@@ -13,6 +13,7 @@ const router = createRouter({
     { path: '/market/mine', component: () => import('./views/MyListingsView.vue'), meta: { auth: true } },
     { path: '/trades', component: () => import('./views/TradesView.vue'), meta: { auth: true } },
     { path: '/listing/:id', component: () => import('./views/ListingDetailView.vue'), props: true },
+    { path: '/admin', component: () => import('./views/AdminView.vue'), meta: { auth: true, role: 'admin' } },
     { path: '/nft/:id', component: () => import('./views/NftDetailView.vue'), props: true },
     { path: '/403', component: () => import('./views/ForbiddenView.vue') },
     { path: '/profile', component: () => import('./views/ProfileView.vue'), meta: { auth: true } },
