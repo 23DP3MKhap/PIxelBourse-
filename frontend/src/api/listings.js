@@ -49,8 +49,5 @@ export const listingsApi = {
   buy: (id) => api.post(`/listings/${id}/buy`),
 }
 
-export const SELLER_FEE = 0.25 // seller gets price minus 25%, rounded down
-export const netPrice = (price) => Math.floor(Number(price) * (1 - SELLER_FEE))
-
 // First validation message if there is one (Laravel 422), else the error message
 export const apiMessage = (e) => Object.values(e.errors || {})[0]?.[0] || e.message

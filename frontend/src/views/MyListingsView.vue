@@ -5,7 +5,7 @@ import ListingCard from '../components/ListingCard.vue'
 import { fmt } from '../data'
 import { useLoad } from '../composables/useLoad'
 import { imagesApi } from '../api/images'
-import { listingsApi, netPrice, apiMessage } from '../api/listings'
+import { listingsApi, apiMessage } from '../api/listings'
 import { showToast } from '../toast'
 import { confirmDialog } from '../confirm'
 
@@ -18,7 +18,7 @@ const available = computed(() => myImages.value.filter((i) => !listedIds.value.h
 
 const form = reactive({ image_id: '', coin: true, price: '', trade: false })
 const saving = ref(false)
-const net = computed(() => (form.coin && Number(form.price) > 0 ? netPrice(form.price) : null))
+const net = computed(() => (form.coin && Number(form.price) > 0 ? Number(form.price) : null))
 
 async function create() {
   if (!form.image_id) return showToast('Izvēlies attēlu.', 'error')
@@ -89,7 +89,7 @@ async function cancel(l) {
       </select>
       <label class="chk"><input v-model="form.coin" type="checkbox" /> Pārdot par monētām</label>
       <input v-if="form.coin" v-model.number="form.price" type="number" min="1" placeholder="Cena ($BORIS)" />
-      <p v-if="net !== null" class="muted small">Pēc pārdošanas saņemsi {{ fmt(net) }} $BORIS (komisija 25%).</p>
+      <p v-if="net !== null" class="muted small">Pēc pārdošanas saņemsi {{ fmt(net) }} $BORIS (tirgū komisijas nav).</p>
       <label class="chk"><input v-model="form.trade" type="checkbox" /> Atļaut apmaiņu</label>
       <button class="grad-btn" type="submit" :disabled="saving">{{ saving ? 'Saglabā...' : 'IZLIKT PĀRDOŠANAI' }}</button>
     </form>

@@ -4,6 +4,7 @@ import AppIcon from '../components/AppIcon.vue'
 import { imagesApi } from '../api/endpoints'
 import { showToast } from '../toast'
 import { fmt } from '../data'
+import { session } from '../session'
 
 const images = ref([])
 const loading = ref(true)
@@ -91,12 +92,16 @@ async function saveEdit(img) {
   }
 }
 
-async function remove(img) {
-  if (!confirm(`Dzēst attēlu "${img.title || 'Bez nosaukuma'}"?`)) return
+// same rounding as backend Listing::feeFor (25%, rounded down)
+const sellPrice = (value) => value - Math.floor((value * 25) / 100)
+
+async function sell(img) {
+  if (!confirm(`Pārdot "${img.title || 'Bez nosaukuma'}" sistēmai par ${fmt(sellPrice(img.value))} $BORIS (komisija 25%)? Attēls tiks dzēsts.`)) return
   try {
-    await imagesApi.remove(img.id)
+    const res = await imagesApi.sell(img.id)
     images.value = images.value.filter((n) => n.id !== img.id)
-    showToast('Attēls dzēsts', 'success')
+    if (session.user) session.user.coin_balance = res.coin_balance
+    showToast(`Pārdots! Saņēmi ${fmt(res.coins_received)} $BORIS`, 'success')
   } catch (e) {
     showToast(e.message, 'error')
   }
@@ -141,7 +146,7 @@ async function remove(img) {
         <span class="value"><AppIcon name="diamond" :size="12" /> {{ fmt(img.value) }} $BORIS</span>
         <div class="ops">
           <button class="icon-btn sm" aria-label="Pārdēvēt" @click="startEdit(img)"><AppIcon name="edit" :size="13" /></button>
-          <button class="icon-btn sm danger" aria-label="Dzēst" @click="remove(img)"><AppIcon name="trash" :size="13" /></button>
+          <button class="icon-btn sm sell" aria-label="Pārdot sistēmai" title="Pārdot sistēmai" @click="sell(img)"><AppIcon name="diamond" :size="13" /></button>
         </div>
       </div>
     </div>
@@ -168,7 +173,7 @@ h1 { font-size: 22px; font-weight: 800; }
 .value { display: flex; align-items: center; gap: 4px; color: var(--cyan); font-size: 12px; font-weight: 700; }
 .ops { display: flex; gap: 6px; }
 .icon-btn.sm { width: 28px; height: 28px; border-radius: 8px; }
-.icon-btn.danger { color: #ef4444; }
+.icon-btn.sell { color: var(--cyan); }
 .edit-row { display: flex; gap: 6px; align-items: center; }
 .edit-input { flex: 1; padding: 6px 8px; background: var(--input); border: 1px solid var(--border); border-radius: 8px; color: #fff; font: 600 13px 'Sora', sans-serif; }
 

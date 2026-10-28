@@ -139,11 +139,9 @@ class ListingController extends Controller
                 ]);
             }
 
-            $fee = Listing::feeFor($listing->price);
-            $earned = $listing->price - $fee;
-
+            // No commission between players, the seller gets the full price.
             $buyer->decrement('coin_balance', $listing->price);
-            $seller->increment('coin_balance', $earned);
+            $seller->increment('coin_balance', $listing->price);
 
             $image->update(['owner_id' => $buyer->id]);
 
@@ -166,8 +164,7 @@ class ListingController extends Controller
                 'user_id' => $seller->id,
                 'listing_id' => $listing->id,
                 'type' => CoinTransaction::TYPE_SALE,
-                'amount' => $earned,
-                'fee' => $fee,
+                'amount' => $listing->price,
             ]);
 
             return $listing;

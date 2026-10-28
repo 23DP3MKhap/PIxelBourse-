@@ -39,7 +39,7 @@ export const imagesApi = {
   mine: () => api.get('/my-images'),
   upload: (form) => api.post('/images', form), // FormData
   rename: (id, title) => api.post(`/images/${id}`, { title }),
-  remove: (id) => api.delete(`/images/${id}`),
+  sell: (id) => api.post(`/images/${id}/sell`), // { coins_received, fee, coin_balance }
 }
 
 export const clickerApi = {
